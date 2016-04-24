@@ -1,19 +1,19 @@
 # Android Screenshot Library
 # -- Native Android application --
 # Makefile
-NDK=/Users/dnfsec/Library/Developer/ndk
-x86_GCC=gcc
-ARM_GCC=${NDK}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-gcc
 
-C_FLAGS=-fPIE -DDEBUG -I${NDK}/platforms/android-9/arch-arm/usr/include
-L_FLAGS=-fPIE -pie -L${NDK}/platforms/android-9/arch-arm/usr/lib -nostdlib ${NDK}/platforms/android-9/arch-arm/usr/lib/crtbegin_static.o ${NDK}/platforms/android-9/arch-arm/usr/lib/crtend_android.o -lc -lm -ldl
+x86_GCC=gcc
+ARM_GCC=/opt/local/arm-2010q1/bin/arm-none-linux-gnueabi-gcc
+
+C_FLAGS=-DDEBUG
+L_FLAGS=--static
 
 ADB=/var/lib/google/android-sdk-linux_86/tools/adb
 DEVICE_FILE=/data/local/asl-native
 
 
 native:	fbshot main
-	${ARM_GCC} ${L_FLAGS} fbshot.o main.o -o native -lgcc
+	${ARM_GCC} ${L_FLAGS} fbshot.o main.o -o native
 
 fbshot:	fbshot.c common.h
 	${ARM_GCC} -c ${C_FLAGS} fbshot.c -o fbshot.o

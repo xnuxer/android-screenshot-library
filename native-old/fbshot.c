@@ -50,7 +50,7 @@
 
 #include "common.h"
 
-#define DEFAULT_FB      "/dev/graphics/fb0"
+#define DEFAULT_FB      "/dev/fb0"
 #define PACKAGE 	"fbshot"
 #define VERSION 	"0.3.1"
 #define MAINTAINER_NAME "Dariusz Swiderski"
@@ -167,7 +167,7 @@ int read_fb(char *device, int vt_num, struct picture *pict){
     vt_old=vt_info.v_active;
   }
 
-  if(!(fd=open(device, O_RDWR)))
+  if(!(fd=open(device, O_RDONLY)))
     FatalError("Couldn't open framebuffer device");
 
   if (ioctl(fd, FBIOGET_FSCREENINFO, &fb_fixinfo))
@@ -175,13 +175,7 @@ int read_fb(char *device, int vt_num, struct picture *pict){
 
   if (ioctl(fd, FBIOGET_VSCREENINFO, &fb_varinfo))
     FatalError("ioctl FBIOGET_VSCREENINFO");
-  printf("xres%i yres%i xres_virtual%i yres_virtual%i xoffset%i yoffset%i\n width%i height%i left_margin%i right_margin%i upper_margin%i lower_margin%i", fb_varinfo.xres, fb_varinfo.yres, fb_varinfo.xres_virtual, fb_varinfo.yres_virtual,fb_varinfo.xoffset ,fb_varinfo.yoffset,fb_varinfo.width,fb_varinfo.height,fb_varinfo.left_margin,fb_varinfo.right_margin,fb_varinfo.upper_margin,fb_varinfo.lower_margin);
-/*  fb_varinfo.yres_virtual=1710;
-  fb_varinfo.xoffset=0;
-  fb_varinfo.yoffset=0;
-  ioctl(fd, FBIOPAN_DISPLAY,&fb_varinfo);
-  ioctl(fd, FBIOGET_VSCREENINFO, &fb_varinfo);
-  printf("xres%i yres%i xres_virtual%i yres_virtual%i xoffset%i yoffset%i\n", fb_varinfo.xres, fb_varinfo.yres, fb_varinfo.xres_virtual, fb_varinfo.yres_virtual, fb_varinfo.xoffset ,fb_varinfo.yoffset);*/
+
   pict->xres=fb_varinfo.xres;
   pict->yres=fb_varinfo.yres;
   pict->bps=fb_varinfo.bits_per_pixel;
@@ -231,26 +225,19 @@ int read_fb(char *device, int vt_num, struct picture *pict){
   fflush(stdout);
   if (vt_num!=-1)
     chvt(vt_num);
-//  lseek(fd, 1639680, SEEK_CUR);
-  int all =pict->xres * pict->yres * i;
-  lseek(fd,all-(224*854*4), SEEK_CUR);
-  //fb_varinfo.yoffset=854;
-  //if(-1==ioctl(fd, FBIOPUT_VSCREENINFO,&fb_varinfo)) printf("failed");
-  
-  //ioctl(fd, FBIOGET_VSCREENINFO,&fb_varinfo);
-  //printf("xoffset%i yoffset%i\n", fb_varinfo.xoffset ,fb_varinfo.yoffset);
+
   j= (read(fd, pict->buffer, ((pict->xres * pict->yres) * i) )!=
   	(pict->xres * pict->yres *i ));
-#ifdef DEBUG
-  printf("to read:%i read:%i\n",(pict->xres* pict->yres * i), j);
-#endif
+//#ifdef DEBUG
+//  printf("to read:%i read:%i\n",(pict->xres* pict->yres * i), j);
+//#endif
   if (vt_num!=-1)
     chvt(vt_old);
 
-  if(j)
-    FatalError("couldn't read the framebuffer");
-  else
-    fprintf(stdout,"done.\n");
+//  if(j)
+//    FatalError("couldn't read the framebuffer");
+//  else
+//    fprintf(stdout,"done.\n");
   close (fd);
 
   unify(pict, &fb_varinfo);

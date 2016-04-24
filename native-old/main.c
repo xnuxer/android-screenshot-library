@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/select.h>
+
 #include <errno.h>
 #include <signal.h>
 #include <sys/types.h>
@@ -25,7 +25,7 @@ FILE* logFile;
 
 inline void Log(const char* msg)
 {
-#ifndef DEBUG
+#ifdef DEBUG
 	if (errno != 0 && logFile == stderr)
 	{
 		char buf[BUF_SIZE];
@@ -299,13 +299,12 @@ int main(int argc, char* argv [])
 	else
 		logFile = stderr;
 #endif
-	Log ("Program initialized really");
-	
+	Log ("Program initialized");
+
 	char* device;
 	device = "/dev/graphics/fb0";
-	Log ("before start");
+
 	int server_socket = start_server();
-	Log ("after start");
 	if (server_socket < 0)
 		Log ("Error while starting server");
 	if (setup_signals() < 0)
